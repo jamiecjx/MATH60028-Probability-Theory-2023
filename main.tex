@@ -1,0 +1,271 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath} % useful
+\usepackage{amsfonts} % fonts like \mathbb{R} among others
+\usepackage{amssymb}
+\usepackage{amsthm} % used for writing lemmas/theorems/etc
+\usepackage{tikz} % for visual tools
+\usepackage{authblk}
+\usepackage[style=numeric]{biblate  x}
+\addbibresource{references.bib}
+\usepackage{enumitem}
+\numberwithin{equation}{section}
+\usepackage[margin=1in]{geometry}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{remark}{Remark}[theorem]
+
+
+\title{MATH60028 Probability Theory}
+\author{Lectured by Professor Igor Krasovsky\\
+Autumn 2023\\
+Notes transcribed into LaTeX by James Chen
+}
+\date{}
+
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\pr}{\mathbb{P}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\dm}{\mathrm{d}}
+
+\newcommand{\mc}[1]{\mathcal{#1}}
+\newcommand{\pspace}{(\Omega, \mathcal{F}, \mathbb{P})}
+
+\newcommand{\sm}{\setminus}
+
+\newcommand{\ie}{\textit{i}.\textit{e}.}
+\newcommand{\eg}{\textit{e}.\textit{g}.}
+
+\begin{document}
+
+\maketitle
+
+
+\section{Events, probability, random variables}
+
+Let $\Omega$ be a set of points $\omega$.
+
+\begin{definition}
+    A nonempty system of subsets of $\Omega$ is called an algebra $\mc{A}$ if $\Omega \in \mc{A}$, $A \cup B$, $A \cap B$, $A^c = \Omega \sm A$ are elements of $\mc{A}$ whenever $A,B \in \mc{A}$.
+\end{definition}
+\begin{definition}
+    A function $\mu: \mc{A} \rightarrow [0, \infty]$ is called finitely additive measure if for any \underline{disjoint} $A,B \in \mc{A}$:
+    \begin{itemize}
+        \item $\mu(A \cup B) = \mu(A) + \mu(B)$
+    \end{itemize}
+    Note that then $\forall A,B \in \mc{A}$, we have$:
+    \mu(A \cup B) = \mu(A) + \mu(B) - \mu(A \cap B)$.
+\end{definition}
+\begin{definition}
+    An algebra $\mc{A}$ is called a $\sigma$-algebra $\mc{F}$ if a countable union $\bigcup_{n=1}^\infty A_n \in \mc{F}$ whenever $A_1, A_2,\cdots \in \mc{F}$.
+\end{definition}
+Note that then also $\bigcap_{n=1}^\infty A_n \in \mc{F}$: consider $\Omega \sm \hat{A_k}$.
+\begin{definition}
+    A function $\mu: \mc{F}\rightarrow[0,\infty]$ is called $\sigma$-additive if for any \underline{disjoint} $A_1, A_2,\cdots \in \mc{F}$, we have $\mu(\bigcup_{n=1}^\infty A_n) = \sum_{n=1}^\infty \mu(A_n)$. Such $\mu$ is called a \textbf{measure} on $\mc{F}$. A measure $\mu$ is ccalled a \textbf{probability measure} if $\mu(\Omega) = 1$.
+\end{definition}
+
+Note that $\mu(\emptyset) = 0$ since $\mu(\emptyset) = \mu(\emptyset \cup \emptyset) = 2\mu(\emptyset)$.
+
+A measure is called $\sigma$-finite if there exists a representation $\Omega = \bigcup_{k=1}^\infty \Omega_k$, $\Omega_k$ are pairwise disjoint, $\mu(\Omega_k) \le \infty$ for all $k=1,2,\cdots$.
+
+\begin{definition}
+    A \textbf{probability space} is a triple $\pspace$ where $\Omega$ is a set called the sample space, $\mc{F}$ is a $\sigma$-algebra of subsets of $\Omega$, $\pr$ a probability measure on $\mc{F}$. Any element of $\mc{F}$ is called an event.
+\end{definition}
+We also say:
+\begin{itemize}
+    \item $\pr(A \cup B)$ - probability that either $A$ or $B$ occurs.
+    \item $\pr(A \cap B)$ - probability that both $A$ and $B$ occur.
+    \item $\pr(A^c) = \pr(\Omega \sm A)$ - probability that $A$ does not occur.
+\end{itemize}
+\begin{lemma}[Continuity of measure]
+    \label{le:1} \phantom{123123} \\
+    (a) If $A_n \in \mc{F}$, $A_1 \subset A_2 \subset \cdots$, then:
+    \begin{equation}
+        \pr (\bigcup_{n=1}^\infty A_n) = \lim_{n\rightarrow\infty}\pr(A_n)
+    \end{equation} - continuity from below
+
+    
+    (b) If $B_n \in \mc{F}$, $B_1 \supset B_2 \supset \cdots$, then:
+    \begin{equation}
+        \pr (\bigcap_{n=1}^\infty B_n) = \lim_{n\rightarrow\infty}\pr(B_n)
+    \end{equation} - continuity from above
+\end{lemma}
+\begin{proof}
+    Since $\bigcup_{n} A_n = \left(\bigcap_n A_n^c\right)^c$, (a) and (b) are equivalent.
+    So sufficient to show (b). To show (b), it suffices to show it for the case $\bigcap_{n=1}^\infty B_n = \emptyset$, as otherwise we replace $B_n$ by $B_n \sm \bigcap_{n=1}^\infty B_n = \emptyset$.
+    \begin{remark}
+        (b) with $\bigcap_{n=1}^\infty B_n = \emptyset$ is called \textbf{continuity at zero.}
+    \end{remark}
+    To prove continuity at zero \ie the fact that $\lim_{n\rightarrow\infty} \pr(B_n) = 0$, consider sets $\Omega \sm B_1, B_1\sm B_2,\cdots$. They are disjoint.
+    \begin{align}
+        \emptyset = \bigcap_{n=1}^\infty B_n = \Omega \sm \bigcup_{n=1}^\infty (\Omega \sm B_n) \\
+        = \Omega \sm \left((\Omega \sm B_1) \cup (B_1 \sm B_2) \cup \cdots\right)
+    \end{align}
+    Therefore,
+    \begin{align}
+        1 = \pr(\Omega \sm B1) + \pr(B_1 \sm B2) + \cdots \\
+        = \sum_{j=0}^\infty \pr(B_j \sm B_{j+1})
+    \end{align}
+    where we have set $B_0 = \Omega$.
+    So $\forall \varepsilon > 0, \exists n_0$ s.t. $\forall n>n_0$, we have:
+    \begin{equation}
+        1 - \sum_{j=0}^{n-1} \pr(B_j \setminus B_{j+1}) = \pr(B_n) \le \varepsilon
+    \end{equation}
+\end{proof}
+
+Any finitely additive measure $\mu$ on $\mc{F}$ satisfies the property:
+
+\begin{equation}
+    \sum_{n=1}^\infty \mu(A_n) \leq \mu\left(\bigcup_{n=1}^\infty A_n\right)
+\end{equation}
+
+if $A_j$ are disjoint sets in $\mc{F}$.
+
+When is it also a measure (equality holds)?
+
+\begin{lemma}[finite additivity into countable additivity]
+    \label{le:2} \phantom{123123} \\
+    A finitely additive probability measure on $\mc{F}$ is a probability measure iff it is continuous at zero.
+\end{lemma}
+
+\begin{proof}
+    ($\Rightarrow$) if $\pr$ is a probability measure then continuity at zero is already shown. \\
+    
+    ($\Leftarrow$) Let $\pr$ be finitely additive probability measure on $\mc{F}$ and for any $B_1 \supset B_2 \supset \cdots$, $\bigcup_{n=1}^\infty B_n = \emptyset$, $B_n \in \mc{F}$, we have $\lim_{n\rightarrow\infty}\pr(B_n) = 0$.
+
+    Hence (a) of Lemma \ref{le:1} holds since (a) and (b) are both equivalent to continuity at zero.
+
+    For any disjoint $C_1, C_2,\cdots \in \mc{F}$, define $A_n = \bigcup_{k=1}^n C_k$. Then $A_1 \subset A_2 \subset \cdots$ and by (a):
+
+    \begin{align}
+        \pr\left(\bigcup_{k=1}^\infty C_k\right) = \pr\left(\bigcup_{n=1}^\infty A_n\right) = \lim_{n\rightarrow\infty}\pr(A_n) \\
+        = \lim_{n\rightarrow\infty} \sum_{k=1}^n \pr(C_k) = \sum_{k=1}^\infty \pr(C_k)
+    \end{align}
+    Here (a) was used in the second equality and finite additivity was used on the third equality.
+\end{proof}
+
+Examples of $\sigma$-algebras on $\Omega$:
+\begin{itemize}
+    \item $\mc{F}_* = \{\emptyset, \Omega\}$
+    \item $\mc{F}^* = \{A: A\subset\Omega\} = 2^\Omega$ (Power set)
+    \item $\sigma$-algebra generated by partitions: $\sigma(D) = \left\{\bigcup_{j\in I}D_j : I\subset \mathbb{N} \right\}$ where $D = \{D_1, D_2, \cdots\}$ is a partition of $\Omega$ into a countable union of disjoint $D_j$, $\Omega = \bigcup_{j=1}^\infty D_j$.
+\end{itemize}
+
+
+\begin{lemma}
+    \label{le:3}
+    For any collection $\mc{E}$ of subsets of $\Omega$, there exists a minimal algebra $a(\mc{E})$ and a minimal $\sigma$-algebra $\sigma(\mc{E})$ that contains all elements of $\mc{E}$ (intersection of all algebras (resp. $\sigma$-algebras containing $\mc{E}$)).
+\end{lemma}
+
+\begin{proof}
+    Recall that the intersection of arbitrarily many algebras (resp. $\sigma$-algebras) containing $\mc{E}$ is an algebra (resp. $\sigma$-algebras) containing $\mc{E}$.
+    We say that $\sigma(\mc{E})$ is generated by $\mc{E}$.
+\end{proof}
+
+\begin{definition}
+    A measurable space is a pair $(E, \mc{E})$ where $E$ is a set and $\mc{E}$ is a $\sigma$-algebra on $E$.
+\end{definition}
+
+Examples:
+(1) $(\R^n, \mc{B}(\R^n))$, where $\mc{B}(\R^n) = \sigma(\{A \subset \R^n: A \mathrm{ open}\})$.
+
+For $n=1$, recall that $\mc{B} = \sigma(\{\text{open subsets of } \R\})$
+
+\begin{equation}
+    = \sigma(\{\text{open intervals}\}) = \sigma(\{\text{closed intervals}\}) = \sigma(\{\text{closed half-lines   } (-\infty,x], x \in \R)\}) 
+\end{equation}
+
+(2) Product $\sigma$-algebra
+
+Consider $(\Omega_1 \times \Omega_2, \mc{F}_1 \otimes \mc{F}_2)$ where $(\Omega_j, \mc{F}_j)$ are measurable spaces, $j=1,2$.
+
+\begin{equation}
+    \mc{F}_1 \otimes \mc{F}_2 = \sigma(\{A_1 \times A_2 : A_1 \in \mc{F}_1, A_2 \in \mc{F}_2\})
+\end{equation}
+
+\begin{lemma}
+    \label{le:4}
+    $\mc{B}(\R^2) = \mc{B}(\R) \times \mc{B}(\R)$.
+\end{lemma}
+
+\begin{proof}
+    $\mc{B}(\R^2) \subset \mc{B}(\R) \times \mc{B}(\R)$, since any open $A\subset\R^2$ can be written as follows:
+    \begin{equation}
+        A = \bigcup_{x\in A\cap \Q^2} R(x,\tau(x)) \in \mc{B}(\R) \times \mc{B}(\R)
+    \end{equation}
+    where $R(x,\tau)$ is an open square centered at $x$ of side length $\tau$.
+
+    Other direction: sufficient to check that $B_1 \times B_2 \in \mc{B}(\R^2)$ for any 2 borel sets $B_1$ and $B_2$.
+
+    Note that $B_1 \times \R \in \mc{B}(\R^2)$ since 
+    \begin{equation}
+        B_1 \times \R = \sigma(\{\text{open subsets of }\R\}) \times \R = \sigma(\{\text{open subsets of }\R\}\times \R)
+    \end{equation}
+
+    Similarly, $\R \times B_2\in \mc{B}(\R^2)$, and so $B_1 \times B_2 = (B_1 \times \R) \cap \R \times B_2 \in \mc{B}(\R^2)$
+\end{proof}
+
+(3) Cylindrical $\sigma$-algebra
+
+Let $\R^\infty = \{x = (x_1,x_2,\cdots), x_k \in \R\}$
+
+\begin{definition}
+    A set $C \subset \R^\infty$ is called cylindrical if it is of the form $C = \{x \in \R^\infty: (x_1,x_2,\cdots,x_n) \in \tilde{C}_n\}$ for some $n \geq 1$ and $\tilde{C}_n \in \mc{B}(\R^n)$.
+\end{definition}
+
+Cylindrical sets form an algebra (check!) which generates a $\sigma$-algebra called cylindrical $\sigma$-algebra, denoted $\mc{B}(\R^\infty)$.
+
+% (Note that this does not contain all open sets, but rather is the coarsest $\sigma$-algebra such that every continuous linear function on $\R^\infty$ is measurable. Strictly smaller than the open set $\sigma$-algebra.)
+
+One can verify that $\mc{B}(\R^n) = \sigma(\{A_1 \times A_2 \times \cdots \subset \R^\infty, A_k \in \mc{B}(\R)\})$
+
+Example:
+
+$\forall c \in \R$, let:
+
+\begin{equation}
+    A = \{x \in \R^\infty: \limsup_{n \rightarrow\infty} x_n > c\}
+\end{equation}
+
+We have that $A \in \mc{B}(\R^\infty)$: indeed
+
+\begin{equation}
+    A = \bigcap_{n=1}^\infty \bigcup_{k=n+1}^\infty \{x \in \R^\infty: x_k > c\} = \{x_k > c \text{ i.o.}\}
+\end{equation}
+
+$\forall c, D = \{x \in \R^\infty: \lim_{n\rightarrow\infty}x_n = c\} \in \mc{B}(\R^\infty)$ (Exercise!)
+
+Recall: nondecreasing function $g(x)$ on $\R$ is continuous up to possibly countably many discontinuities of first kind: $f(x+0) and f(x-0)$ both exist but $f(x+0) - f(x-0) = h_x > 0$.
+
+Moreover, the derivative $g'(x)$ exists Lebesgue a.e.
+
+Let $(\R, \mc{B}(\R), \pr)$ - probability space, $F(x) = \pr((-\infty,x]), x \in \R$. Then (exercise):
+
+\begin{itemize}
+    \item $F(x)$ is non decreasing
+    \item $\lim_{x \rightarrow -\infty}F(x) = 0$ and $\lim_{x \rightarrow \infty}F(x) = 1$
+    \item $F(x)$ is continuous from the right $\forall x \in \R$
+\end{itemize}
+
+\begin{definition}
+    Any function $F:\R \rightarrow [0,1]$ satisfying the above 3 conditions is called a distribution function (on $\R$).
+\end{definition}
+
+We have seen that $\pr$ gives rise to $F$. In fact, the opposite is true and there exists a one-to-one correspondence between distribution functions and probability measures:
+
+\begin{theorem}
+    Let $F(x)$ be a distribution function on $\R$.
+
+    Then there exists a unique probability measure $\pr$ on $(\R, \mc{B}(\R))$ s.t. $\pr((-\infty,x])) = F(x)$.
+\end{theorem}
+
+\end{document}
